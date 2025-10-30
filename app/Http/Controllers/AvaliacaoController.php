@@ -4,8 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class AvaliacaoController
+class AvaliacaoController extends Controller
 {
+
+    public function publicacao()
+    {
+        return $this->belongsTo(Publicacao::class, 'publicacao_id');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id');
+    }
+
+
     /**
      * Display a listing of the resource.
      */

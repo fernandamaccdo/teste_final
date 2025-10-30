@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function likes(){
+        return $this->hasMany(Ld::class);
+    }
+    public function deslikes(){
+        return $this->hasMany(Ld::class);
+    }
 }

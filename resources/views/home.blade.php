@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -85,7 +84,7 @@
             font-size: 16px;
             border-radius: 4px;
         }
-        /* Modal BÁSICO */
+        
         .modal-simples {
             display: none; 
             position: fixed; 
@@ -119,7 +118,7 @@
             float: right;
             cursor: pointer;
         }
-        /* Botões de seta */
+        
         .btn-arrow {
             background: none;
             border: none;
@@ -131,7 +130,7 @@
             width: 20px;
             height: 20px;
             transition: filter 0.3s;
-            filter: brightness(0); /* Preto */
+            filter: brightness(0); 
         }
        
 
@@ -213,7 +212,7 @@
         <div class="rodape-direita">Copyright-2024</div>
     </div>
 
-    <!-- Modal simples para login -->
+    <!-- Modal -->
     <div class="modal-simples" id="modalLogin">
         <div class="modal-conteudo">
             <button class="btn-modal-fechar" onclick="document.getElementById('modalLogin').style.display='none'">&times;</button>
@@ -229,7 +228,7 @@
     <script>
 
     
-        // Alterna a cor do botão seta ao clicar
+    
         document.querySelectorAll('.btn-arrow').forEach(button => {
             button.addEventListener('click', () => {
                 button.classList.toggle('active');

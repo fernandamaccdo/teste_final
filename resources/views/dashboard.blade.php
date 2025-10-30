@@ -52,6 +52,39 @@
             object-fit: cover;
             margin-bottom: 6px;
         }
+        .rodape {
+            background: #ff6600;
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            text-align: center; 
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+        .rodape-centro {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+        .rodape-centro img {
+         width: 20px;
+         height: 20px;
+        }
+        .rodape-esquerda {
+            font-size: 14px;
+            margin-left:180px;
+        }
+        .rodape-direita{
+            font-size: 16px;
+            margin-right:180px;
+        }
 
         .info-linha {
             display: flex;
@@ -64,16 +97,18 @@
         .votos {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
         .local {
             font-weight: bold;
+            margin-right: 8px;
         }
 
         .cidade {
             font-size: 13px;
             color: black;
+            margin-right: 8px;
         }
 
         .comentarios {
@@ -93,6 +128,9 @@
             border: none;
             cursor: pointer;
             padding: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .btn-arrow img {
@@ -126,28 +164,6 @@
             padding-right: 40px;
         }
 
-        .rodape-centro {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .rodape-centro img {
-            width: 20px;
-            height: 20px;
-        }
-
-        .rodape-esquerda {
-            font-size: 14px;
-            margin-left: 180px;
-        }
-
-        .rodape-direita {
-            font-size: 16px;
-            margin-right: 180px;
-        }
-
         .btn-laranja {
             background: orange;
             color: #fff;
@@ -155,6 +171,7 @@
             padding: 10px 28px;
             font-size: 16px;
             border-radius: 4px;
+            cursor: pointer;
         }
 
         #sair {
@@ -163,120 +180,89 @@
     </style>
 </head>
 <body>
-    <div class="container-linhas">  <!-- parte usuario -->
+    <div class="container-linhas">
+        <!-- BLOCO ESQUERDO: USUÁRIO -->
         <div class="bloco-esquerda" style="text-align:center">
-            <img class="foto-principal" src="{{ asset(Auth::user()->foto) }}" alt="">
-            <div>{{ Auth::user()->name }}</div>
-            <div style="margin-top:14px;">Likes: 9<br>Dislikes: 12</div>
+            <img class="foto-principal" src="{{ asset($user->foto) }}" alt="Foto do usuário">
+            <div>{{ $user->name }}</div>
+            <div style="margin-top:14px;">
+                Likes: {{ $user->total_likes ?? 0 }}<br>
+                Dislikes: {{ $user->total_deslikes ?? 0 }}
+            </div>
         </div>
 
+        <!-- BLOCO CENTRAL: PUBLICAÇÕES -->
         <div class="bloco-centro">
-            <h1 style="text-align:center">Publicações</h1>
+            <h1 style="text-align:center">Minhas Publicações</h1>
 
-            <!-- publicação 1 -->
-            <div class="publicacao">
-                <div><strong>Título do prato 01</strong></div>
-                <img src="{{ asset('publicacao01.png') }}" alt="Prato 01">
-                <div class="info-linha">
-                    <div class="votos">
-                        <span class="local">Local 01</span>
-                            <button class="btn-arrow">
-                                <img src="{{ asset('flecha_cima_vazia.svg') }}">
-                            </button>2
-                            <button class="btn-arrow">
-                                <img src="{{ asset('flecha_baixo_vazia.svg') }}">
-                            </button>1
-                      
-                    </div>
+            @forelse ($publicacoes as $pub)
+                <div class="publicacao">
+                    <div><strong>{{ $pub->titulo_prato ?? 'Sem título' }}</strong></div>
 
-                    <div class="comentarios">
-                        <span class="cidade">Maceió - AL</span>
-                        <a href="{{ route('publicacao') }}">
-                            <img src="{{ asset('chat.svg') }}" alt="chat">
-                        </a>
-                        <span>4</span>
-                    </div>
-                </div>
-            </div>
+                    @if ($pub->foto)
+                        <img src="{{ asset($pub->foto) }}" alt="Imagem da publicação">
+                    @endif
 
-             <!-- publicação 2 -->
-            <div class="publicacao">
-                <div><strong>Título do prato 02</strong></div>
-                <img src="{{ asset('publicacao02.png') }}" alt="Prato 02">
+                    <div class="info-linha">
+                        <div class="votos">
+                            <span class="local">{{ $pub->local_ ?? '' }}</span>
 
-                <div class="info-linha">
-                    <div class="votos">
-                        <span class="local">Local 02</span>
-                        <button class="btn-arrow">
-                            <img src="{{ asset('flecha_cima_vazia.svg') }}">
-                        </button>9
-                        <button class="btn-arrow">
-                            <img src="{{ asset('flecha_baixo_vazia.svg') }}">
-                        </button>1
-                    </div>
+                            <form action="{{ route('like') }}" method="post" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="publicacao_id" value="{{ $pub->id }}">
+                                <button class="btn-arrow" type="submit" title="Curtir">
+                                    <img src="{{ asset('flecha_cima_vazia.svg') }}" alt="curtir">
+                                </button>
+                                <span>{{ $pub->like_count ?? 0 }}</span>
+                            </form>
 
-                    <div class="comentarios">
-                        <span class="cidade">Maceió - AL</span>
-                        <a href="{{ route('publicacao') }}">
-                            <img src="{{ asset('chat.svg') }}" alt="chat">
-                        </a>
-                        <span>10</span>
+                            <form action="{{ route('deslike') }}" method="post" style="display:inline; margin-left:6px;">
+                                @csrf
+                                <input type="hidden" name="publicacao_id" value="{{ $pub->id }}">
+                                <button class="btn-arrow" type="submit" title="Não curtir">
+                                    <img src="{{ asset('flecha_baixo_vazia.svg') }}" alt="não curtir">
+                                </button>
+                                <span>{{ $pub->deslike_count ?? 0 }}</span>
+                            </form>
+                        </div>
+
+                        <div class="comentarios">
+                            <span class="cidade">{{ $pub->cidade ?? '' }}</span>
+                            <a href="{{ route('publicacao.show', ['id' => $pub->id]) }}">
+                                <img src="{{ asset('chat.svg') }}" alt="chat">
+                            </a>
+                            <span>{{ $pub->comentarios_count ?? 0 }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- publicação 3 -->
-            <div class="publicacao">
-                <div><strong>Título do prato 03</strong></div>
-                <img src="{{ asset('publicacao03.png') }}" alt="Prato 03">
-
-                <div class="info-linha">
-                    <div class="votos">
-                        <span class="local">Local 03</span>
-                        <button class="btn-arrow">
-                            <img src="{{ asset('flecha_cima_vazia.svg') }}">
-                        </button>4
-                        <button class="btn-arrow">
-                            <img src="{{ asset('flecha_baixo_vazia.svg') }}">
-                        </button>0
-                    </div>
-
-                    <div class="comentarios">
-                        <span class="cidade">Maceió - AL</span>
-                        <a href="{{ route('publicacao') }}">
-                            <img src="{{ asset('chat.svg') }}" alt="chat">
-                        </a>
-                        <span>2</span>
-                    </div>
-                </div>
-            </div>
+            @empty
+                <p style="text-align:center;">Nenhuma publicação encontrada.</p>
+            @endforelse
         </div>
 
+        <!-- BLOCO DIREITO: SAIR -->
         <div class="bloco-direita" style="display:flex; align-items:center; justify-content:center;">
             <div id="sair">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button class="btn-laranja">Sair</button>  <!--botao de sair -->
+                    <button class="btn-laranja">Sair</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="rodape"> <!--rodape-->
+    <div class="rodape">
         <div class="rodape-esquerda">Sabor do Brasil</div>
-
         <div class="rodape-centro">
             <img src="{{ asset('Instagram.svg') }}" alt="Instagram">
             <img src="{{ asset('Twitter.svg') }}" alt="Twitter">
             <img src="{{ asset('Whatsapp.svg') }}" alt="Whatsapp">
             <img src="{{ asset('Globe.svg') }}" alt="Globe">
         </div>
-
-        <div class="rodape-direita">Copyright - 2024</div>
+        <div class="rodape-direita">Copyright-2024</div>
     </div>
 
-    <!--botao setas -->
-     <script> 
+    <script>
         document.querySelectorAll('.btn-arrow').forEach(button => {
             button.addEventListener('click', () => {
                 button.classList.toggle('active');
@@ -285,6 +271,3 @@
     </script>
 </body>
 </html>
-
-
-
